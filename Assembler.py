@@ -26,47 +26,104 @@ def Decimal_to_Binary(num, num_type='unsigned'):
     return
 
 def Execution(line):
-        #storing first word of line in variable (instruction)in inst
-        inst=line.split()[0]
-        if inst == 'add':
+        #storing first word of line in variable (instruction)in firstpart example --> "add"
+        firstpart=line.split()[0]
+        #matching that instruction and assigning corresponding function
+        if firstpart == 'add':
             Addition_R(line)
-        elif inst == 'addi':
+        elif firstpart == 'addi':
             Addition_I(line)
-        elif inst == 'jal':
+        elif firstpart == 'jal':
             jal(line)
-        elif inst =='sub':
+        elif firstpart =='sub':
             Subtraction(line)
-        elif inst == 'sll':
+        elif firstpart == 'sll':
             Shift_Left(line)
-        elif inst == 'srl':
+        elif firstpart == 'srl':
             Shift_Right(line)
-        elif inst == 'or':
+        elif firstpart == 'or':
             OR_Gate(line)
-        elif inst == 'and':
+        elif firstpart == 'and':
             AND_Gate(line)
             
-def Addition_R():
+def Addition_R(line):
+    # taking 2 part of the line(next to blank spaces containing registers and other stuff) as 1 part is for instruction
+    # we are breaking as  add reg1, reg2, reg3 when we split line we get ["add","reg1,reg2,reg3"]
+    # by taking [1] we are taking "reg1,reg2,reg3"
+    secondpart=line.split()[1]
+    # second_part.split(",") makes string a list like [reg1,reg2,reg3]
+    lis=secondpart.split(",")
+    if lis[0] in register and lis[1] in register and lis[2] in register: #means all register are given registers only
+         register[lis[0]] = Binary_to_Decimal(register[lis[1]]) + Binary_to_Decimal(register(lis[2]))
+         Decimal_to_Binary(register[lis[0]])
+         PC=PC+4
+    
+
     return
 
-def Addition_I():
+def Addition_I(line):
+    secondpart=line.split()[1]
+    lis=secondpart.split(",")
+    if lis[0] in register and lis[1] in register:
+        register[lis[0]]=Binary_to_Decimal([lis[1]]+int(lis[2]))#!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+        Decimal_to_Binary(register[lis[0]])
+        PC=PC+4
+
+
     return
 
-def jal():
+def jal(line):
     return
 
-def Subtraction():
+def Subtraction(line):
+    secondpart=line.split()[1]
+    lis=secondpart.split(",")
+    if lis[0] in register and lis[1] in register and lis[2] in register:
+        register[lis[0]] = Binary_to_Decimal(register[lis[1]]) - Binary_to_Decimal(register(lis[2]))
+        Decimal_to_Binary(register[lis[0]])
+        PC=PC+4
+
+
     return
 
-def Shift_Left():
+def Shift_Left(line):
+    secondpart=line.split()[1]
+    lis=secondpart.split(",")
+    if lis[0] in register and lis[1] in register and lis[2] in register:
+        register[lis[0]] = Binary_to_Decimal(register[lis[1]]) << Binary_to_Decimal(register(lis[2]))
+        Decimal_to_Binary(register[lis[0]])
+        PC=PC+4
+
     return
 
-def Shift_Right():
+def Shift_Right(line):
+    secondpart=line.split()[1]
+    lis=secondpart.split(",")
+    if lis[0] in register and lis[1] in register and lis[2] in register:
+        register[lis[0]] = Binary_to_Decimal(register[lis[1]]) >> Binary_to_Decimal(register(lis[2]))
+        Decimal_to_Binary(register[lis[0]])
+        PC=PC+4
+
     return
 
-def OR_Gate():
+def OR_Gate(line):
+    secondpart=line.split()[1]
+    lis=secondpart.split(",")
+    if lis[0] in register and lis[1] in register and lis[2] in register:
+        register[lis[0]] = Binary_to_Decimal(register[lis[1]])|Binary_to_Decimal(register(lis[2]))
+        Decimal_to_Binary(register[lis[0]])
+        PC=PC+4
+
     return
 
-def AND_Gate():
+def AND_Gate(line):
+    secondpart=line.split()[1]
+    lis=secondpart.split(",")
+    if lis[0] in register and lis[1] in register and lis[2] in register:
+        register[lis[0]] = Binary_to_Decimal(register[lis[1]])&Binary_to_Decimal(register(lis[2]))
+        Decimal_to_Binary(register[lis[0]])
+        PC=PC+4
+
     return
 
 
