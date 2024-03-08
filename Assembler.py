@@ -20,3 +20,53 @@ memory={"0":0,"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9,"10":10,
 
 label={}#making empty dictionary for labels (Branching)
 
+def Binary_to_Decimal(num, num_type='unsigned'):
+    return
+def Decimal_to_Binary(num, num_type='unsigned'):
+    return
+
+def Execution(line):
+        #storing first word of line in variable (instruction)in inst
+        inst=line.split()[0]
+        if inst == 'add':
+            Addition_R(line)
+        elif inst == 'addi':
+            Addition_I(line)
+        elif inst == 'jal':
+            jal(line)
+        elif inst =='sub':
+            Subtraction(line)
+        elif inst == 'sll':
+            Shift_Left(line)
+        elif inst == 'srl':
+            Shift_Right(line)
+        elif inst == 'or':
+            OR_Gate(line)
+        elif inst == 'and':
+            AND_Gate(line)
+            
+def Addition_R():
+    return
+
+def Addition_I():
+    return
+
+def jal():
+    return
+
+def Subtraction():
+    return
+
+def Shift_Left():
+    return
+
+def Shift_Right():
+    return
+
+def OR_Gate():
+    return
+
+def AND_Gate():
+    return
+
+
