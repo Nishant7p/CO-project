@@ -22,6 +22,7 @@ label={}#making empty dictionary for labels (Branching)
 
 def Binary_to_Decimal(num, num_type='unsigned'):
     return
+
 def Decimal_to_Binary(num, num_type='unsigned'):
     return
 
@@ -74,7 +75,7 @@ def Addition_I(line):
 
 def jal(line):
     return
-
+# bhai ye subtraction me issue hai signd lena ha unsigned liya h tune
 def Subtraction(line):
     secondpart=line.split()[1]
     lis=secondpart.split(",")
@@ -125,5 +126,69 @@ def AND_Gate(line):
         PC=PC+4
 
     return
+
+
+def Branch_Eq(line):
+     secondpart=line.split()[1]
+     lis=secondpart.split(",")
+     if lis[0] in register and lis[1] in register:
+         if Binary_to_Decimal(register[lis[0]])==Binary_to_Decimal(register[lis[1]]):
+             PC=PC+int(lis[2])
+
+     return 
+
+def Branch_Neq(line):
+     secondpart=line.split()[1]
+     lis=secondpart.split(",")
+     if lis[0] in register and lis[1] in register:
+         if Binary_to_Decimal(register[lis[0]])!=Binary_to_Decimal(register[lis[1]]):
+             PC=PC+int(lis[2])
+
+     return 
+
+def Branch_GreaterEq(line):
+     secondpart=line.split()[1]
+     lis=secondpart.split(",")
+     if lis[0] in register and lis[1] in register:
+         if Binary_to_Decimal(register[lis[0]])>=Binary_to_Decimal(register[lis[1]]):
+             PC=PC+int(lis[2])
+
+
+
+     return
+
+def Branch_GreaterEq_Unsigmed(line):
+     secondpart=line.split()[1]
+     lis=secondpart.split(",")
+     if lis[0] in register and lis[1] in register:
+         if Binary_to_Decimal(register[lis[0]])>=Binary_to_Decimal(register[lis[1]]):
+             PC=PC+int(lis[2])
+
+
+     return
+
+def Branch_Less(line):
+     secondpart=line.split()[1]
+     lis=secondpart.split(",")
+     if lis[0] in register and lis[1] in register:
+         if Binary_to_Decimal(register[lis[0]])<Binary_to_Decimal(register[lis[1]]):
+             PC=PC+int(lis[2])
+
+def Branch_Less_Unsigned(line):
+     secondpart=line.split()[1]
+     lis=secondpart.split(",")
+     if lis[0] in register and lis[1] in register:
+         if Binary_to_Decimal(register[lis[0]])<Binary_to_Decimal(register[lis[1]]):
+             PC=PC+int(lis[2])
+
+
+
+
+
+ 
+
+
+
+    
 
 
