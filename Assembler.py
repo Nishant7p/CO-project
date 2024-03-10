@@ -1,3 +1,4 @@
+output=open("output.txt","w+")
 
 
 
@@ -23,19 +24,19 @@ def Binary_to_Decimal(num, num_type='signed'):
     if num_type == 'signed':
         if num[0] == 1:
             temp = 0
-            temp = temp + (-2)**(len(num)-1)
+            temp = temp + (-2)(len(num)-1)
             for i in range(1, len(num)):
-                temp = temp + int(num[i])*(2**(len(num)-i-1))
+                temp = temp + int(num[i])(2*(len(num)-i-1))
             return temp
         else:
             temp = 0
             for i in range(0, len(num)):
-                temp = temp + int(num[i])*(2**(len(num)-i-1))
+                temp = temp + int(num[i])(2*(len(num)-i-1))
             return temp
     if num_type=="unsigned":
         temp = 0
         for i in range(0, len(num)):
-            temp = temp + int(num[i])*(2**(len(num)-i-1))
+            temp = temp + int(num[i])(2*(len(num)-i-1))
         return temp
 
 def SignExtend(digit, num):
@@ -71,6 +72,8 @@ def Execution(line):
         #storing first word of line in variable (instruction)in firstpart example --> "add"
         firstpart=line.split()[0]
         #matching that instruction and assigning corresponding function
+        if line == 'beq zero,zero,0':
+            globals()['PC'] = 'virtual halt'
         if firstpart == 'add':
             Addition_R(line)
         elif firstpart == 'addi':
@@ -87,6 +90,7 @@ def Execution(line):
             OR_Gate(line)
         elif firstpart == 'and':
             AND_Gate(line)
+        
             
 def Addition_R(line):
     # taking 2 part of the line(next to blank spaces containing registers and other stuff) as 1 part is for instruction
@@ -95,10 +99,20 @@ def Addition_R(line):
     secondpart=line.split()[1]
     # second_part.split(",") makes string a list like [reg1,reg2,reg3]
     lis=secondpart.split(",")
-    if lis[0] in register and lis[1] in register and lis[2] in register: #means all register are given registers only
+    if lis[0] in register and lis[1] in register and lis[2] in register: 
          register[lis[0]] = Binary_to_Decimal(register[lis[1]]) + Binary_to_Decimal(register(lis[2]))
          Decimal_to_Binary(register[lis[0]])
-         PC=PC+4
+         rd = lis[0]
+         rs1 = lis[1]
+         rs2 = lis[2]
+         rd_binary = register[rd]
+         rs1_binary = register[rs1]
+         rs2_binary = register[rs2]
+         rd_binary = rd_binary.zfill(5)
+         rs1_binary = rs1_binary.zfill(5)
+         rs2_binary = rs2_binary.zfill(5)
+         output.write("0000000 " + rs2_binary + " " + rs1_binary + " 000 " + rd_binary + " 0110011")
+         PC=PC+1
     
 
     return
@@ -107,12 +121,14 @@ def Addition_I(line):
     secondpart=line.split()[1]
     lis=secondpart.split(",")
     if lis[0] in register and lis[1] in register:
-        register[lis[0]]=Binary_to_Decimal(lis[1])+int(lis[2])#!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+        register[lis[0]]=Binary_to_Decimal(lis[1])+int(lis[2])
         Decimal_to_Binary(register[lis[0]])
-        PC=PC+4
-
+        PC=PC+1
+        foutput = f"{register[lis[1]]} 000 {register[lis[0]][-5:]} 0010011"
+        output.write(foutput + '\n')
 
     return
+
 
 def jal(line):
     return
@@ -123,7 +139,9 @@ def Subtraction(line):
     if lis[0] in register and lis[1] in register and lis[2] in register:
         register[lis[0]] = Binary_to_Decimal(register[lis[1]]) - Binary_to_Decimal(register(lis[2]))
         Decimal_to_Binary(register[lis[0]])
-        PC=PC+4
+        PC=PC+1
+        outputF = f"0100000 {register[lis[2]].zfill(5)} {register[lis[1]].zfill(5)} 000 {register[lis[0]].zfill(5)} 0110011"
+        output.write(outputF + '\n')
 
 
     return
@@ -134,7 +152,10 @@ def Shift_Left(line):
     if lis[0] in register and lis[1] in register and lis[2] in register:
         register[lis[0]] = Binary_to_Decimal(register[lis[1]],"unsigned") << Binary_to_Decimal(register(lis[2]),"unsigned")
         Decimal_to_Binary(register[lis[0]],"unsigned")
-        PC=PC+4
+        PC=PC+1
+        outputF = f"0000000 {register[lis[2]].zfill(5)} {register[lis[1]].zfill(5)} 001 {register[lis[0]].zfill(5)} 0110011"
+        output.write(outputF + '\n')
+
 
     return
 
@@ -144,7 +165,9 @@ def Shift_Right(line):
     if lis[0] in register and lis[1] in register and lis[2] in register:
         register[lis[0]] = Binary_to_Decimal(register[lis[1]],"unsigned") >> Binary_to_Decimal(register(lis[2]),"unsigned")
         Decimal_to_Binary(register[lis[0]],"unsigned")
-        PC=PC+4
+        PC=PC+1
+        outputF = f"0000000 {register[lis[2]].zfill(5)} {register[lis[1]].zfill(5)} 101 {register[lis[0]].zfill(5)} 0110011"
+        output.write(outputF + '\n')
 
     return
 
@@ -154,7 +177,9 @@ def OR_Gate(line):
     if lis[0] in register and lis[1] in register and lis[2] in register:
         register[lis[0]] = Binary_to_Decimal(register[lis[1]])|Binary_to_Decimal(register(lis[2]))
         Decimal_to_Binary(register[lis[0]])
-        PC=PC+4
+        PC=PC+1
+        outputF = f"0000000 {register[lis[2]].zfill(5)} {register[lis[1]].zfill(5)} 110 {register[lis[0]].zfill(5)} 0110011"
+        output.write(outputF + '\n')
 
     return
 
@@ -164,7 +189,9 @@ def AND_Gate(line):
     if lis[0] in register and lis[1] in register and lis[2] in register:
         register[lis[0]] = Binary_to_Decimal(register[lis[1]])&Binary_to_Decimal(register(lis[2]))
         Decimal_to_Binary(register[lis[0]])
-        PC=PC+4
+        PC=PC+1
+        outputF = f"0000000 {register[lis[2]].zfill(5)} {register[lis[1]].zfill(5)} 110 {register[lis[0]].zfill(5)} 0110011"
+        output.write(outputF + '\n')
 
     return
 
@@ -174,7 +201,17 @@ def Branch_Eq(line):
      lis=secondpart.split(",")
      if lis[0] in register and lis[1] in register:
          if Binary_to_Decimal(register[lis[0]])==Binary_to_Decimal(register[lis[1]]):
-             PC=PC+int(lis[2])
+             PC=PC+int(lis[2])//4
+             outputF = f"{bin(int(lis[2]))[2:].zfill(12)[:2]} "
+             output.write(outputF + '\n')
+
+
+
+
+
+
+
+
 
      return 
 
@@ -183,7 +220,7 @@ def Branch_Neq(line):
      lis=secondpart.split(",")
      if lis[0] in register and lis[1] in register:
          if Binary_to_Decimal(register[lis[0]])!=Binary_to_Decimal(register[lis[1]]):
-             PC=PC+int(lis[2])
+             PC=PC+int(lis[2])//4
 
      return 
 
@@ -192,7 +229,7 @@ def Branch_GreaterEq(line):
      lis=secondpart.split(",")
      if lis[0] in register and lis[1] in register:
          if Binary_to_Decimal(register[lis[0]])>=Binary_to_Decimal(register[lis[1]]):
-             PC=PC+int(lis[2])
+             PC=PC+int(lis[2])//4
 
      return
 
@@ -201,7 +238,7 @@ def Branch_GreaterEq_Unsigned(line):
      lis=secondpart.split(",")
      if lis[0] in register and lis[1] in register:
          if Binary_to_Decimal(register[lis[0]], 'unsigned')>=Binary_to_Decimal(register[lis[1]], 'unsigned'):
-             PC=PC+int(lis[2])
+             PC=PC+int(lis[2])//4
 
 
      return
@@ -211,7 +248,7 @@ def Branch_Less(line):
      lis=secondpart.split(",")
      if lis[0] in register and lis[1] in register:
          if Binary_to_Decimal(register[lis[0]])<Binary_to_Decimal(register[lis[1]]):
-             PC=PC+int(lis[2])
+             PC=PC+int(lis[2])//4
 
 def Branch_Less_Unsigned(line):
      secondpart=line.split()[1]
@@ -228,6 +265,7 @@ def lw(line):
     lis=secondpart.split(",")
     if lis[0] in register and lis[1] in register:
         lis[0]=memory[str((int(lis[2]) + Binary_to_Decimal(lis[1]) - 65536)//4)-1]
+        PC = PC + 1
 
 
 
@@ -237,7 +275,7 @@ def sltiu(line):
     if lis[0] in register and lis[1] in register:
         if Binary_to_Decimal(lis[1],"unsigned")<int(lis[2]):
             lis[0]=1
-        PC=PC+4
+        PC=PC+1
 
 
 
@@ -246,90 +284,13 @@ def sw(line):
     lis=secondpart.split(",")
     if lis[0] in register:
          memory[(str(int(lis[2]) + Binary_to_Decimal(lis[1]) - 65536)//4)-1] = register[lis[0]]
-         PC=PC+4
+         PC=PC+1
 
 
 
+if __name__ == "main":
+     with open('text.txt', 'r') as f:
+         file = f.readlines()
 
-
-
-
-
-
-if __name__ == "__main__":
-     with open('in.txt', 'r') as rfile:
-        variables_end_index = 0
-        lines = rfile.readlines()
-    
-     for line in lines:
-        line = line.strip("\n")
-        
-        # print(line.split())
-        if line == "":
-            continue
-        #if is_var(line):!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            #handle_variable(line)!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        else:
-            break
-        variables_end_index += 1
-    # print(variables_end_index)
-     for line in lines[variables_end_index:]:
-        line = line.strip("/n")
-        
-        # print(line.split())
-        if line == "":
-            continue
-        #if is_var(line):
-            #print("declare all variables at the start")
-            #exit()
-        #if is_label(line):
-            #handle_label(line)
-        #counter += 1
-    #address_variables()
-     for line in lines[variables_end_index:-1]:
-        line = line.strip("\n")
-        
-        # print(line.split())
-        if line == "":
-            continue
-        #if is_label(line):
-            #line = strip_label(line)
-        if line == "hlt":
-            print("hlt not being used as the last instruction")
-            exit()
-        #handle_instruction(line)
-     #if is_label(lines[-1]):
-        #line = strip_label(lines[-1])
-        #if line == "hlt":
-            #handle_instruction(line)
-        #else:
-            #print("Missing hlt instruction")
-            #exit()
-    #elif lines[-1].strip("\n").strip() != "hlt":
-        #print("Missing hlt instruction")
-        #exit()
-   # else:
-        #handle_instruction(lines[-1].strip("\n").strip())
-    #make_instructions()
-
-    # print(variables)
-    # print(labels)
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-
-    
-
-
+     while PC != 'virtual halt':
+         Execution(file[PC//4])
