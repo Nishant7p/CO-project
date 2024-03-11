@@ -2,14 +2,14 @@ output=open("output.txt","w+")
 
 
 
-register={"zero":00000000000000000000000000000000,"ra":00000000000000000000000000000000,"sp":00000000000000000000000000000000,"gp":00000000000000000000000000000000,"tp":00000000000000000000000000000000,"t0":00000000000000000000000000000000,"t1":00000000000000000000000000000000,"t1":00000000000000000000000000000000,"t2":00000000000000000000000000000000,
-          "s1":00000000000000000000000000000000,"a0":00000000000000000000000000000000,"a1":00000000000000000000000000000000,"a2":00000000000000000000000000000000,"a3":00000000000000000000000000000000,"a4":00000000000000000000000000000000,"a5":00000000000000000000000000000000,"a6":00000000000000000000000000000000,"a7":00000000000000000000000000000000,"s2":00000000000000000000000000000000,
-          "s3":00000000000000000000000000000000,"s4":00000000000000000000000000000000,"s5":00000000000000000000000000000000,"s6":00000000000000000000000000000000,"s7":00000000000000000000000000000000,"s8":00000000000000000000000000000000,"s9":00000000000000000000000000000000,"s10":00000000000000000000000000000000,"s11":00000000000000000000000000000000,
-          "t3":00000000000000000000000000000000,"t4":00000000000000000000000000000000,"t5":00000000000000000000000000000000,"t6":00000000000000000000000000000000}
+register={"zero":'00000000000000000000000000000000',"ra":"00000000000000000000000000000000","sp":"00000000000000000000000000000000","gp":"00000000000000000000000000000000","tp":"00000000000000000000000000000000","t0":"00000000000000000000000000000000","t1":"00000000000000000000000000000000","t1":"00000000000000000000000000000000","t2":"00000000000000000000000000000000",
+          "s1":"00000000000000000000000000000000","a0":"00000000000000000000000000000000","a1":"00000000000000000000000000000000","a2":"00000000000000000000000000000000","a3":"00000000000000000000000000000000","a4":"00000000000000000000000000000000","a5":"00000000000000000000000000000000","a6":"00000000000000000000000000000000","a7":"00000000000000000000000000000000","s2":"00000000000000000000000000000000",
+          "s3":"00000000000000000000000000000000","s4":"00000000000000000000000000000000","s5":"00000000000000000000000000000000","s6":"00000000000000000000000000000000","s7":"00000000000000000000000000000000","s8":"00000000000000000000000000000000","s9":"00000000000000000000000000000000","s10":"00000000000000000000000000000000","s11":"00000000000000000000000000000000",
+          "t3":"00000000000000000000000000000000","t4":"00000000000000000000000000000000","t5":"00000000000000000000000000000000","t6":"00000000000000000000000000000000"}
 
 # defining program counter and Saved register/frame pointer in global
 PC=0
-s0=fp=00000000000000000000000000000000
+s0=fp="00000000000000000000000000000000"
 
 
 # defining memory(32 bit) in a dictionary
@@ -90,6 +90,28 @@ def Execution(line):
             OR_Gate(line)
         elif firstpart == 'and':
             AND_Gate(line)
+        elif firstpart == 'beq':
+            Branch_Eq(line)
+        elif firstpart == 'bne':
+            Branch_Neq(line)
+        elif firstpart =='bge':
+            Branch_GreaterEq(line)
+        elif firstpart == 'bgeu':
+            Branch_GreaterEq_Unsigned(line)
+        elif firstpart == 'blt':
+            Branch_Less(line)
+        elif firstpart == 'bltu':
+            Branch_Less_Unsigned(line)
+        elif firstpart == 'lw':
+            lw(line)
+        elif firstpart == 'auipc':
+            auipc(line)
+        elif firstpart == 'sw':
+            sw(line)
+        elif firstpart =='lui':
+            lui(line)
+        elif firstpart == 'and':
+            AND_Gate(line)
         
             
 def Addition_R(line):
@@ -111,7 +133,7 @@ def Addition_R(line):
          rd_binary = rd_binary.zfill(5)
          rs1_binary = rs1_binary.zfill(5)
          rs2_binary = rs2_binary.zfill(5)
-         output.write("0000000 " + rs2_binary + " " + rs1_binary + " 000 " + rd_binary + " 0110011")
+         output.write("0000000" + rs2_binary + rs1_binary + "000" + rd_binary + "0110011")
          PC=PC+1
     
 
@@ -124,13 +146,18 @@ def Addition_I(line):
         register[lis[0]]=Binary_to_Decimal(lis[1])+int(lis[2])
         Decimal_to_Binary(register[lis[0]])
         PC=PC+1
-        foutput = f"{register[lis[1]]} 000 {register[lis[0]][-5:]} 0010011"
-        output.write(foutput + '\n')
+        output.write(f'{int(lis[2])}{register[lis[1]].zfill(5)}000{register[lis[0]].zfill(5)}0010011')
 
     return
 
 
 def jal(line):
+    secondpart = line.split()[1]
+    lis = secondpart.split(',')
+    if lis[0] in register:
+        register[lis[0]] = PC*4 + 4
+        immediate = Decimal_to_Binary(int(lis[1]))[20:]
+        output.write(immediate[0]+immediate[10:]+immediate[9]+immediate[1:9]+register[lis[0]]+'1101111')
     return
 # bhai ye subtraction me issue hai signd lena ha unsigned liya h tune
 def Subtraction(line):
@@ -140,11 +167,21 @@ def Subtraction(line):
         register[lis[0]] = Binary_to_Decimal(register[lis[1]]) - Binary_to_Decimal(register(lis[2]))
         Decimal_to_Binary(register[lis[0]])
         PC=PC+1
-        outputF = f"0100000 {register[lis[2]].zfill(5)} {register[lis[1]].zfill(5)} 000 {register[lis[0]].zfill(5)} 0110011"
+        outputF = f"0100000{register[lis[2]].zfill(5)}{register[lis[1]].zfill(5)}000{register[lis[0]].zfill(5)}0110011"
         output.write(outputF + '\n')
 
 
     return
+
+def xor(line):
+    secondpart = line.split()[1]
+    lis = secondpart.split(',')
+    if lis[0] in register and lis[1] in register and lis[2] in register:
+        register[lis[0]] = Binary_to_Decimal(register[lis[1]]) ^ Binary_to_Decimal(register(lis[2]))
+        Decimal_to_Binary(register[lis[0]])
+        PC = PC + 1
+        outputF = f"0000000{register[lis[2]].zfill(5)}{register[lis[1]].zfill(5)}100{register[lis[0]].zfill(5)}0110011"
+        output.write(outputF + '\n')
 
 def Shift_Left(line):
     secondpart=line.split()[1]
@@ -153,7 +190,7 @@ def Shift_Left(line):
         register[lis[0]] = Binary_to_Decimal(register[lis[1]],"unsigned") << Binary_to_Decimal(register(lis[2]),"unsigned")
         Decimal_to_Binary(register[lis[0]],"unsigned")
         PC=PC+1
-        outputF = f"0000000 {register[lis[2]].zfill(5)} {register[lis[1]].zfill(5)} 001 {register[lis[0]].zfill(5)} 0110011"
+        outputF = f"0000000{register[lis[2]].zfill(5)}{register[lis[1]].zfill(5)}001{register[lis[0]].zfill(5)}0110011"
         output.write(outputF + '\n')
 
 
@@ -166,7 +203,7 @@ def Shift_Right(line):
         register[lis[0]] = Binary_to_Decimal(register[lis[1]],"unsigned") >> Binary_to_Decimal(register(lis[2]),"unsigned")
         Decimal_to_Binary(register[lis[0]],"unsigned")
         PC=PC+1
-        outputF = f"0000000 {register[lis[2]].zfill(5)} {register[lis[1]].zfill(5)} 101 {register[lis[0]].zfill(5)} 0110011"
+        outputF = f"0000000{register[lis[2]].zfill(5)}{register[lis[1]].zfill(5)}101{register[lis[0]].zfill(5)}0110011"
         output.write(outputF + '\n')
 
     return
@@ -178,7 +215,7 @@ def OR_Gate(line):
         register[lis[0]] = Binary_to_Decimal(register[lis[1]])|Binary_to_Decimal(register(lis[2]))
         Decimal_to_Binary(register[lis[0]])
         PC=PC+1
-        outputF = f"0000000 {register[lis[2]].zfill(5)} {register[lis[1]].zfill(5)} 110 {register[lis[0]].zfill(5)} 0110011"
+        outputF = f"0000000{register[lis[2]].zfill(5)}{register[lis[1]].zfill(5)}110{register[lis[0]].zfill(5)}0110011"
         output.write(outputF + '\n')
 
     return
@@ -190,7 +227,7 @@ def AND_Gate(line):
         register[lis[0]] = Binary_to_Decimal(register[lis[1]])&Binary_to_Decimal(register(lis[2]))
         Decimal_to_Binary(register[lis[0]])
         PC=PC+1
-        outputF = f"0000000 {register[lis[2]].zfill(5)} {register[lis[1]].zfill(5)} 110 {register[lis[0]].zfill(5)} 0110011"
+        outputF = f"0000000{register[lis[2]].zfill(5)}{register[lis[1]].zfill(5)}110{register[lis[0]].zfill(5)}0110011\n"
         output.write(outputF + '\n')
 
     return
@@ -202,17 +239,14 @@ def Branch_Eq(line):
      if lis[0] in register and lis[1] in register:
          if Binary_to_Decimal(register[lis[0]])==Binary_to_Decimal(register[lis[1]]):
              PC=PC+int(lis[2])//4
-             outputF = f"{bin(int(lis[2]))[2:].zfill(12)[:2]} "
-             output.write(outputF + '\n')
-
-
-
-
-
-
-
-
-
+             Formatingimm= format(int(lis[2]), '012b') 
+             outputF = Formatingimm[0] + Formatingimm[2:8] + register[lis[1]].zfill(5) + register[lis[0]].zfill(5) + '000' +  Formatingimm[8:] + Formatingimm[1] + " 1100011\n"
+             output.write(outputF)
+         else:
+             PC = PC + 1
+             Formatingimm = format(int(lis[2]), '012b')
+             outputF = Formatingimm[0] + Formatingimm[2:8] + register[lis[1]].zfill(5) + register[lis[0]].zfill(5) + '000' +  Formatingimm[8:] + Formatingimm[1] + " 1100011\n"
+             output.write(outputF)
      return 
 
 def Branch_Neq(line):
@@ -221,6 +255,14 @@ def Branch_Neq(line):
      if lis[0] in register and lis[1] in register:
          if Binary_to_Decimal(register[lis[0]])!=Binary_to_Decimal(register[lis[1]]):
              PC=PC+int(lis[2])//4
+             Formatingimm= format(int(lis[2]), '012b') 
+             outputF = Formatingimm[0] + Formatingimm[2:8] + register[lis[1]].zfill(5) + register[lis[0]].zfill(5) + '001' +  Formatingimm[8:] + Formatingimm[1] + " 1100011\n"
+             output.write(outputF)
+         else:
+             PC = PC + 1
+             Formatingimm = format(int(lis[2]), '012b')
+             outputF = Formatingimm[0] + Formatingimm[2:8] + register[lis[1]].zfill(5) + register[lis[0]].zfill(5) + '001' +  Formatingimm[8:] + Formatingimm[1] + " 1100011\n"
+             output.write(outputF)
 
      return 
 
@@ -230,6 +272,14 @@ def Branch_GreaterEq(line):
      if lis[0] in register and lis[1] in register:
          if Binary_to_Decimal(register[lis[0]])>=Binary_to_Decimal(register[lis[1]]):
              PC=PC+int(lis[2])//4
+             Formatingimm= format(int(lis[2]), '012b') 
+             outputF = Formatingimm[0] + Formatingimm[2:8] + register[lis[1]].zfill(5) + register[lis[0]].zfill(5) + '101' +  Formatingimm[8:] + Formatingimm[1] + " 1100011\n"
+             output.write(outputF)
+         else:
+             PC = PC + 1
+             Formatingimm = format(int(lis[2]), '012b')
+             outputF = Formatingimm[0] + Formatingimm[2:8] + register[lis[1]].zfill(5) + register[lis[0]].zfill(5) + '101' +  Formatingimm[8:] + Formatingimm[1] + " 1100011\n"
+             output.write(outputF)
 
      return
 
@@ -239,6 +289,14 @@ def Branch_GreaterEq_Unsigned(line):
      if lis[0] in register and lis[1] in register:
          if Binary_to_Decimal(register[lis[0]], 'unsigned')>=Binary_to_Decimal(register[lis[1]], 'unsigned'):
              PC=PC+int(lis[2])//4
+             Formatingimm= format(int(lis[2]), '012b') 
+             outputF = Formatingimm[0] + Formatingimm[2:8] + register[lis[1]].zfill(5) + register[lis[0]].zfill(5) + '111' +  Formatingimm[8:] + Formatingimm[1] + " 1100011\n"
+             output.write(outputF)
+         else:
+             PC = PC + 1
+             Formatingimm = format(int(lis[2]), '012b')
+             outputF = Formatingimm[0] + Formatingimm[2:8] + register[lis[1]].zfill(5) + register[lis[0]].zfill(5) + '111' +  Formatingimm[8:] + Formatingimm[1] + " 1100011\n"
+             output.write(outputF)
 
 
      return
@@ -249,13 +307,30 @@ def Branch_Less(line):
      if lis[0] in register and lis[1] in register:
          if Binary_to_Decimal(register[lis[0]])<Binary_to_Decimal(register[lis[1]]):
              PC=PC+int(lis[2])//4
+             Formatingimm= format(int(lis[2]), '012b') 
+             outputF = Formatingimm[0] + Formatingimm[2:8] + register[lis[1]].zfill(5) + register[lis[0]].zfill(5) + '100' +  Formatingimm[8:] + Formatingimm[1] + " 1100011\n"
+             output.write(outputF)
+
+         else:
+             PC = PC + 1
+             Formatingimm = format(int(lis[2]), '012b')
+             outputF = Formatingimm[0] + Formatingimm[2:8] + register[lis[1]].zfill(5) + register[lis[0]].zfill(5) + '100' +  Formatingimm[8:] + Formatingimm[1] + " 1100011\n"
+             output.write(outputF)
 
 def Branch_Less_Unsigned(line):
      secondpart=line.split()[1]
      lis=secondpart.split(",")
      if lis[0] in register and lis[1] in register:
          if Binary_to_Decimal(register[lis[0]],"unsigned")<Binary_to_Decimal(register[lis[1]],"unsigned"):
-             PC=PC+int(lis[2])
+             PC=PC+int(lis[2])//4
+             Formatingimm= format(int(lis[2]), '012b') 
+             outputF = Formatingimm[0] + Formatingimm[2:8] + register[lis[1]].zfill(5) + register[lis[0]].zfill(5) + '110' +  Formatingimm[8:] + Formatingimm[1] + " 1100011\n"
+             output.write(outputF)
+         else:
+             PC = PC + 1
+             Formatingimm = format(int(lis[2]), '012b')
+             outputF = Formatingimm[0] + Formatingimm[2:8] + register[lis[1]].zfill(5) + register[lis[0]].zfill(5) + '00110' +  Formatingimm[8:] + Formatingimm[1] + " 1100011\n"
+             output.write(outputF)
              return
 
 
@@ -264,8 +339,9 @@ def lw(line):
     secondpart=line.split()[1]
     lis=secondpart.split(",")
     if lis[0] in register and lis[1] in register:
-        lis[0]=memory[str((int(lis[2]) + Binary_to_Decimal(lis[1]) - 65536)//4)-1]
+        lis[0]=memory[str((int(lis[1]) + Binary_to_Decimal(lis[2]) - 65536)//4)]
         PC = PC + 1
+        output.write(f'{lis[1]}{lis[2]}010{lis[0]}0000011\n')
 
 
 
@@ -285,12 +361,53 @@ def sw(line):
     if lis[0] in register:
          memory[(str(int(lis[2]) + Binary_to_Decimal(lis[1]) - 65536)//4)-1] = register[lis[0]]
          PC=PC+1
+         output.write(f'{lis[1]}{lis[2]}')
+
+
+
+def jalr(line):
+    secondpart=line.split()[1]
+    lis=secondpart.split(",")
+    if lis[0] in register and lis[1] in register:
+        register[lis[0]]= Decimal_to_Binary(PC+1)
+        PC = (PC + int(lis[2])//4)&~1
+
+
+        return
+    
+
+
+def lui(line):
+    secondpart=line.split()[1]
+    lis=secondpart.split(",")
+    if lis[0] in register :
+        register[lis[0]]=int(lis[1])<<12
+        Decimal_to_Binary(lis[0])
+        PC=PC+1
+
+
+        return
+    
+
+def auipc(line):
+    secondpart=line.split()[1]
+    lis=secondpart.split(",")
+    if lis[0] in register :
+         register[lis[0]]=(int(lis[1])<<12)//4 +PC
+         Decimal_to_Binary(lis[0])
+         PC=PC+1
+
 
 
 
 if __name__ == "main":
      with open('text.txt', 'r') as f:
          file = f.readlines()
+     labels = []
+     for line in file:
+         if ':' in line:
+             labels.append(line[:line.index(':')])
+     
 
      while PC != 'virtual halt':
          Execution(file[PC//4])
