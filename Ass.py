@@ -34,7 +34,7 @@ def Binary_to_Decimal(num, num_type='unsigned'):
     else:
         sum = 0
         for i in range(0, len(num)):
-            sum = sum + int(num[i])(2*(len(num)-i-1))
+            sum = sum + int(num[i])*(2*(len(num)-i-1))
             return sum
         
 def Sign_extend(num1, num, size=32):
@@ -162,7 +162,7 @@ class assembler:
             print('Error: No such register')
             globals()['pc'] = len(globals()['new_lines'])
             return
-        if lis[0] in register and line.split()[1].lis[1] in register:
+        if lis[0] in register and lis[1] in register:
             output.write('0100000'+registers[lis[2]]+registers[lis[1]]+'000'+registers[lis[0]]+'0110011\n')
             globals()['pc'] += 4
     
@@ -250,7 +250,7 @@ class assembler:
             print('Error: No such register')
             globals()['pc'] = len(globals()['new_lines'])*4
             return
-        if lis[0] in register and line.split()[1].lis[1] in register:
+        if lis[0] in register and lis[1] in register:
             try:
                 imm = decimaltobinary(int(line.split()[1].split(',')[2]), 'signed', 12)
                 output.write(decimaltobinary(int(line.split()[1].split(',')[2]), 'signed', 12)+registers[lis[1]]+'000'+registers[lis[0]]+'0010011\n')
@@ -294,9 +294,9 @@ class assembler:
             print('Error: Invalid immediate')
             globals()['pc'] = len(globals()['new_lines'])*4
             return
-        if lis[0] in register and line.split()[1].lis[1] in register:
+        if lis[0] in register and lis[1] in register:
             try:
-                immediate = decimaltobinary(int(line.split()[1].split(',')[2]), 'unsigned', 12)
+                immediate = decimaltobinary(int(lis[2]), 'unsigned', 12)
                 output.write(immediate+registers[lis[1]]+'011'+registers[lis[0]]+'0010011\n')
                 globals()['pc'] += 4
             except OverflowError:
@@ -315,7 +315,7 @@ class assembler:
             print('Error: Invalid immediate')
             globals()['pc'] = len(globals()['new_lines'])*4
             return
-        if lis[0] in register and line.split()[1].lis[1] in register:
+        if lis[0] in register and lis[1] in register:
             try:
                 immediate = decimaltobinary(int(line.split()[1].split(',')[2]), 'signed', 12)
                 output.write(immediate+registers[lis[1]]+'000'+registers[lis[0]]+'1100111\n')
@@ -359,9 +359,9 @@ class assembler:
             print('Error: Invalid immediate')
             globals()['pc'] = len(globals()['new_lines'])*4
             return
-        if lis[0] in register and line.split()[1].lis[1] in register:
+        if lis[0] in register and lis[1] in register:
             if line.split()[1].split(',')[2]+':' not in globals()['labels']:
-                if Binary_to_Decimal(globals()[line.split()[1].split(',')[0]]) == Binary_to_Decimal(globals()[line.split()[1].split(',')[1]]):
+                if Binary_to_Decimal(register[lis[0]]) == Binary_to_Decimal(register[lis[1]]):
                     try:
                         imm = decimaltobinary(int(line.split()[1].split(',')[2]), 'signed')
                         output.write(imm[19]+imm[21:27]+registers[lis[1]]+registers[lis[0]]+'000'+imm[27:31]+imm[20]+'1100011\n')
@@ -380,7 +380,7 @@ class assembler:
                     globals()['pc'] = len(globals()['new_lines'])*4
                     return
             elif line.split()[1].split(',')[2]+':' in globals()['labels']:
-                if Binary_to_Decimal(globals()[line.split()[1].split(',')[0]], 'signed') == Binary_to_Decimal(globals()[line.split()[1].split(',')[1]], 'signed'):
+                if Binary_to_Decimal(register[lis[0]], 'signed') == Binary_to_Decimal(register[lis[1]], 'signed'):
                     try:
                         imm = decimaltobinary(labels[line.split()[1].split(',')[2]+':']*4-(globals()['pc']+4), 'signed')
                         output.write(imm[19]+imm[21:27]+registers[lis[1]]+registers[lis[0]]+'000'+imm[27:31]+imm[20]+'1100011\n')
@@ -410,9 +410,9 @@ class assembler:
             print('Error: Invalid immediate')
             globals()['pc'] = len(globals()['new_lines'])*4
             return
-        if lis[0] in register and line.split()[1].lis[1] in register:             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if lis[0] in register and lis[1] in register:             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             if line.split()[1].split(',')[2]+':' not in globals()['labels']:
-                if Binary_to_Decimal(globals()[line.split()[1].split(',')[0]]) != Binary_to_Decimal(globals()[line.split()[1].split(',')[1]]):
+                if Binary_to_Decimal(register[lis[0]]) != Binary_to_Decimal(register[lis[1]]):
                     try:
                         imm = decimaltobinary(int(line.split()[1].split(',')[2]), 'signed', 12)
     
@@ -434,7 +434,7 @@ class assembler:
                     globals()['pc'] = len(globals()['new_lines'])*4
                     return
             elif line.split()[1].split(',')[2]+':' in globals()['labels']:
-                if Binary_to_Decimal(globals()[line.split()[1].split(',')[0]], 'signed') != Binary_to_Decimal(globals()[line.split()[1].split(',')[1]], 'signed'):
+                if Binary_to_Decimal(register[lis[0]], 'signed') != Binary_to_Decimal(register[lis[1]], 'signed'):
                     try:
                         imm = decimaltobinary(labels[line.split()[1].split(',')[2]+':']*4-(globals()['pc']+4), 'signed')
                         
@@ -466,9 +466,9 @@ class assembler:
             print('Error: Invalid immediate')
             globals()['pc'] = len(globals()['new_lines'])*4
             return
-        if lis[0] in register and line.split()[1].lis[1] in register:
+        if lis[0] in register and lis[1] in register:
             if line.split()[1].split(',')[2]+':' not in globals()['labels']:
-                if Binary_to_Decimal(globals()[line.split()[1].split(',')[0]], 'signed') >= Binary_to_Decimal(globals()[line.split()[1].split(',')[1]], 'signed'):
+                if Binary_to_Decimal(register[lis[0]], 'signed') >= Binary_to_Decimal(register[lis[1]], 'signed'):
                     try:
                         imm = decimaltobinary(int(line.split()[1].split(',')[2]), 'signed')
                     
@@ -489,7 +489,7 @@ class assembler:
                     globals()['pc'] = len(globals()['new_lines'])*4
                     return
             elif line.split()[1].split(',')[2]+':' in globals()['labels']:
-                if Binary_to_Decimal(globals()[line.split()[1].split(',')[0]], 'signed') >= Binary_to_Decimal(globals()[line.split()[1].split(',')[1]], 'signed'):
+                if Binary_to_Decimal(register[lis[0]], 'signed') >= Binary_to_Decimal(register[lis[1]], 'signed'):
                     try:
                         imm = decimaltobinary(labels[line.split()[1].split(',')[2]+':']*4-(globals()['pc']+4),'signed')
                         
@@ -523,9 +523,9 @@ class assembler:
             print('Error: Invalid immediate')
             globals()['pc'] = len(globals()['new_lines'])*4
             return 
-        if lis[0] in register and line.split()[1].lis[1] in register:
+        if lis[0] in register and lis[1] in register:
             if line.split()[1].split(',')[2] not in globals()['labels']:
-                if Binary_to_Decimal(globals()[line.split()[1].split(',')[0]]) >= Binary_to_Decimal(globals()[line.split()[1].split(',')[1]]):
+                if Binary_to_Decimal(register[lis[0]]) >= Binary_to_Decimal(register[lis[1]]):
                     try:
                         imm = decimaltobinary(int(line.split()[1].split(',')[2]), 'signed')
                         
@@ -546,7 +546,7 @@ class assembler:
                     globals()['pc'] = len(globals()['new_lines'])*4
                     return
             elif line.split()[1].split(',')[2]+':' in globals()['labels']:
-                if Binary_to_Decimal(globals()[line.split()[1].split(',')[0]]) >= Binary_to_Decimal(globals()[line.split()[1].split(',')[1]]):
+                if Binary_to_Decimal(register[lis[0]]) >= Binary_to_Decimal(register[lis[1]]):
                     try:
                         imm = decimaltobinary(labels[line.split()[1].split(',')[2]+':']*4-(globals()['pc']+4), 'signed')
                         
@@ -579,9 +579,9 @@ class assembler:
             print('Error: Invalid immediate')
             globals()['pc'] = len(globals()['new_lines'])*4
             return
-        if lis[0] in register and line.split()[1].lis[1] in register:
+        if lis[0] in register and lis[1] in register:
             if line.split()[1].split(',')[2] not in globals()['labels']:
-                if Binary_to_Decimal(globals()[line.split()[1].split(',')[0]], 'signed') < Binary_to_Decimal(globals()[line.split()[1].split(',')[1]], 'signed'):
+                if Binary_to_Decimal(register[lis[0]], 'signed') < Binary_to_Decimal(register[lis[1]], 'signed'):
                     try:
                         imm = decimaltobinary(int(line.split()[1].split(',')[2]), 'signed')
                         
@@ -602,7 +602,7 @@ class assembler:
                     globals()['pc'] = len(globals()['new_lines'])*4
                     return
             elif line.split()[1].split(',')[2]+':' in globals()['labels']:
-                if Binary_to_Decimal(globals()[line.split()[1].split(',')[0]], 'signed') < Binary_to_Decimal(globals()[line.split()[1].split(',')[1]], 'signed'):
+                if Binary_to_Decimal(register[lis[0]], 'signed') < Binary_to_Decimal(register[lis[1]], 'signed'):
                     try:
                         imm = decimaltobinary(labels[line.split()[1].split(',')[2]+':']*4-(globals()['pc']+4), 'signed')
                         
@@ -635,9 +635,9 @@ class assembler:
             print('Error: Invalid immediate')
             globals()['pc'] = len(globals()['new_lines'])*4
             return
-        if lis[0] in register and line.split()[1].lis[1] in register:
+        if lis[0] in register and lis[1] in register:
             if line.split()[1].split(',')[2]+':' not in globals()['labels']:
-                if Binary_to_Decimal(globals()[line.split()[1].split(',')[0]]) < Binary_to_Decimal(globals()[line.split()[1].split(',')[1]]):
+                if Binary_to_Decimal(register[lis[0]]) < Binary_to_Decimal(register[lis[1]]):
                     try:
                         imm = decimaltobinary(int(line.split()[1].split(',')[2]), 'signed')
                         
@@ -659,7 +659,7 @@ class assembler:
                     globals()['pc'] = len(globals()['new_lines'])*4
                     return
             elif line.split()[1].split(',')[2]+':' in globals()['labels']:
-                if Binary_to_Decimal(globals()[line.split()[1].split(',')[0]]) < Binary_to_Decimal(globals()[line.split()[1].split(',')[1]]):
+                if Binary_to_Decimal(register[lis[0]]) < Binary_to_Decimal(register[lis[1]]):
                     try:
                         imm = decimaltobinary(labels[line.split()[1].split(',')[2]+':']*4-(globals()[pc]+4),'signed')
                         output.write(imm[19]+imm[21:27]+registers[lis[1]]+registers[lis[0]]+'110'+imm[27:31]+imm[20]+'1100011\n')
@@ -763,9 +763,9 @@ class assembler:
                     return
                 
 
-with open('text.txt', 'r') as f:
+with open('simple4', 'r') as f:
     lines = f.readlines()
-
+ 
 x = assembler()
 new_lines = x.remove_special_characters(lines)
 
